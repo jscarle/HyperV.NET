@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HyperV.NET")]
-[assembly: AssemblyDescription("Simple .NET Hyper-V Virtual Machine Creation Library")]
+[assembly: AssemblyDescription("Simple Hyper-V Virtual Machine Creation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HyperV.NET")]
