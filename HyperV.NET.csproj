@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C95322F8-7BBF-4462-8FDA-ADD3B92C1150}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HyperV</RootNamespace>
+    <AssemblyName>HyperV.NET</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Management" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutomaticStartAction.cs" />
+    <Compile Include="Definitions\AutomaticStartDefinition.cs" />
+    <Compile Include="AutomaticStopAction.cs" />
+    <Compile Include="Definitions\AutomaticStopDefinition.cs" />
+    <Compile Include="BootDeviceType.cs" />
+    <Compile Include="BootEntries.cs" />
+    <Compile Include="BootEntry.cs" />
+    <Compile Include="Definitions\CheckpointsDefinition.cs" />
+    <Compile Include="CheckpointType.cs" />
+    <Compile Include="Definitions\IntegrationServicesDefinition.cs" />
+    <Compile Include="IScsiDrive.cs" />
+    <Compile Include="MacAddress.cs" />
+    <Compile Include="Definitions\MemoryDefinition.cs" />
+    <Compile Include="MemoryWeight.cs" />
+    <Compile Include="NetworkAdapter.cs" />
+    <Compile Include="Definitions\NetworkAdaptersDefinition.cs" />
+    <Compile Include="PortMirroringMode.cs" />
+    <Compile Include="Definitions\ProcessorDefinition.cs" />
+    <Compile Include="ScsiController.cs" />
+    <Compile Include="Definitions\ScsiControllersDefinition.cs" />
+    <Compile Include="SecureBootTemplate.cs" />
+    <Compile Include="Definitions\SecurityDefinition.cs" />
+    <Compile Include="Definitions\SmartPagingDefinition.cs" />
+    <Compile Include="VirtualDvdDisk.cs" />
+    <Compile Include="VirtualDvdDrive.cs" />
+    <Compile Include="VirtualHardDisk.cs" />
+    <Compile Include="VirtualHardDiskFormat.cs" />
+    <Compile Include="VirtualHardDiskType.cs" />
+    <Compile Include="VirtualHardDrive.cs" />
+    <Compile Include="VirtualMachineDefinition.cs" />
+    <Compile Include="VMMS.public.cs" />
+    <Compile Include="VMMS.internal.cs" />
+    <Compile Include="Extensions\WmiHelpers.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>UpdateVersion.exe -v Assembly -b Increment -r Fixed -i "$(ProjectDir)Properties\AssemblyInfo.cs" -o AssemblyInfo$.cs
+move AssemblyInfo$.cs "$(ProjectDir)Properties\AssemblyInfo.cs"
+UpdateVersion.exe -v File -b Increment -r Fixed -i "$(ProjectDir)Properties\AssemblyInfo.cs" -o AssemblyInfo$.cs
+move AssemblyInfo$.cs "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+</Project>
