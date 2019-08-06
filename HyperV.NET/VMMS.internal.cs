@@ -227,19 +227,6 @@ namespace HyperV
             }
         }
 
-        internal ManagementObject GetDefaultGuardian()
-        {
-            ObjectQuery query = new ObjectQuery("SELECT * FROM MSFT_HgsGuardian WHERE Name = \"UntrustedGuardian\"");
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(hgsScope, query))
-            using (ManagementObjectCollection collection = searcher.Get())
-            {
-                if (collection.Count == 0)
-                    throw new ManagementException("Unable to find the Default Guardian.");
-
-                return collection.First();
-            }
-        }
-
         internal ManagementObject GetImageManagementService()
         {
             using (ManagementClass managementClass = new ManagementClass("Msvm_ImageManagementService"))
@@ -260,6 +247,19 @@ namespace HyperV
             {
                 managementClass.Scope = virtualizationScope;
                 return managementClass.GetInstances().First();
+            }
+        }
+
+        internal ManagementObject GetUntrustedGuardian()
+        {
+            ObjectQuery query = new ObjectQuery("SELECT * FROM MSFT_HgsGuardian WHERE Name = \"UntrustedGuardian\"");
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(hgsScope, query))
+            using (ManagementObjectCollection collection = searcher.Get())
+            {
+                if (collection.Count == 0)
+                    return null;
+                else
+                    return collection.First();
             }
         }
 
@@ -365,9 +365,30 @@ namespace HyperV
             }
         }
 
+        internal void NewByGenerateCertificates(out ManagementObject hgsGuardian)
+        {
+            using (ManagementClass hgsGuardianClass = new ManagementClass("MSFT_HgsGuardian"))
+            {
+                hgsGuardianClass.Scope = hgsScope;
+                using (ManagementBaseObject inputParameters = hgsGuardianClass.GetMethodParameters("NewByGenerateCertificates"))
+                {
+                    inputParameters["Name"] = "UntrustedGuardian";
+                    inputParameters["GenerateCertificates"] = true;
+                    using (ManagementBaseObject outputParameters = hgsGuardianClass.InvokeMethod("NewByGenerateCertificates", inputParameters, null))
+                    {
+                        ValidateOutput(outputParameters);
+                        hgsGuardian = (ManagementObject)outputParameters["cmdletOutput"];
+                    }
+                }
+            }
+        }
+
         internal byte[] NewByGuardians()
         {
-            using (ManagementObject defaultGuardian = GetDefaultGuardian())
+            ManagementObject defaultGuardian = GetUntrustedGuardian();
+            if (defaultGuardian == null)
+                NewByGenerateCertificates(out defaultGuardian);
+            using (defaultGuardian)
             using (ManagementObject keyProtector = CreateKeyProtector())
             using (ManagementBaseObject inputParameters = keyProtector.GetMethodParameters("NewByGuardians"))
             {

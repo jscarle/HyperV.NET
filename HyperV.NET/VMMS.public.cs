@@ -468,9 +468,8 @@ namespace HyperV
 
                 if (!String.IsNullOrWhiteSpace(networkAdapterDefinition.VirtualSwitch))
                 {
-                    ManagementObject virtualSwitch = GetVirtualSwitch(networkAdapterDefinition.VirtualSwitch);
-                    switchPortResource["HostResource"] = new string[] { virtualSwitch.Path.Path }; // Virtual Switch
-                    virtualSwitch.Dispose();
+                    using (ManagementObject virtualSwitch = GetVirtualSwitch(networkAdapterDefinition.VirtualSwitch))
+                        switchPortResource["HostResource"] = new string[] { virtualSwitch.Path.Path }; // Virtual Switch
                 }
                 else
                 {
@@ -487,13 +486,12 @@ namespace HyperV
                 //==================================================================================
 
                 if (networkAdapterDefinition.VlanId > 0)
-                {
-                    ManagementObject portVlanSettings = CreateFeatureSettings(Features.Vlan);
-                    portVlanSettings["OperationMode"] = 1; // Access
-                    portVlanSettings["AccessVlanId"] = networkAdapterDefinition.VlanId;
-                    AddFeatureSettings(switchPort, new ManagementObject[] { portVlanSettings }, out _);
-                    portVlanSettings.Dispose();
-                }
+                    using (ManagementObject portVlanSettings = CreateFeatureSettings(Features.Vlan))
+                    {
+                        portVlanSettings["OperationMode"] = 1; // Access
+                        portVlanSettings["AccessVlanId"] = networkAdapterDefinition.VlanId;
+                        AddFeatureSettings(switchPort, new ManagementObject[] { portVlanSettings }, out _);
+                    }
 
                 //==================================================================================
                 // Configure Quality of Service
@@ -501,105 +499,112 @@ namespace HyperV
 
                 if ((networkAdapterDefinition.MinimumBandwidth > 0 || networkAdapterDefinition.MaximumBandwidth > 0) &&
                     networkAdapterDefinition.MaximumBandwidth >= networkAdapterDefinition.MinimumBandwidth)
-                {
-                    ManagementObject portBandwidthSettings = CreateFeatureSettings(Features.Bandwidth);
-                    portBandwidthSettings["Reservation"] = networkAdapterDefinition.MinimumBandwidth * 1000000;
-                    portBandwidthSettings["Limit"] = networkAdapterDefinition.MaximumBandwidth * 1000000;
-                    AddFeatureSettings(switchPort, new ManagementObject[] { portBandwidthSettings }, out _);
-                    portBandwidthSettings.Dispose();
-                }
+                    using (ManagementObject portBandwidthSettings = CreateFeatureSettings(Features.Bandwidth))
+                    {
+                        portBandwidthSettings["Reservation"] = networkAdapterDefinition.MinimumBandwidth * 1000000;
+                        portBandwidthSettings["Limit"] = networkAdapterDefinition.MaximumBandwidth * 1000000;
+                        AddFeatureSettings(switchPort, new ManagementObject[] { portBandwidthSettings }, out _);
+                    }
 
                 //==================================================================================
                 // Configure Hardware Acceleration
                 //==================================================================================
 
-                ManagementObject portOffloadSettings = GetRelatedSettings(switchPort, Settings.SwitchPortOffload);
+                if (networkAdapterDefinition.Vmq ||
+                    networkAdapterDefinition.IpsecOffloading ||
+                    networkAdapterDefinition.SrIov)
+                    using (ManagementObject portOffloadSettings = GetRelatedSettings(switchPort, Settings.SwitchPortOffload))
+                    {
+                        //----------------------------------------------------------------------------------
+                        // Configure Virtual Machine Queue
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure Virtual Machine Queue
-                //----------------------------------------------------------------------------------
+                        if (networkAdapterDefinition.Vmq)
+                            portOffloadSettings["VMQOffloadWeight"] = 100;
+                        else
+                            portOffloadSettings["VMQOffloadWeight"] = 0;
 
-                if (networkAdapterDefinition.Vmq)
-                    portOffloadSettings["VMQOffloadWeight"] = 100;
-                else
-                    portOffloadSettings["VMQOffloadWeight"] = 0;
+                        //----------------------------------------------------------------------------------
+                        // Configure IPsec Task Offloading
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure IPsec Task Offloading
-                //----------------------------------------------------------------------------------
+                        if (networkAdapterDefinition.IpsecOffloading)
+                            portOffloadSettings["IPSecOffloadLimit"] = networkAdapterDefinition.IpsecSecurityAssociations;
+                        else
+                            portOffloadSettings["IPSecOffloadLimit"] = 0;
 
-                if (networkAdapterDefinition.IpsecOffloading)
-                    portOffloadSettings["IPSecOffloadLimit"] = networkAdapterDefinition.IpsecSecurityAssociations;
-                else
-                    portOffloadSettings["IPSecOffloadLimit"] = 0;
+                        //----------------------------------------------------------------------------------
+                        // Configure SR-IOV
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure SR-IOV
-                //----------------------------------------------------------------------------------
+                        if (networkAdapterDefinition.SrIov)
+                            portOffloadSettings["IOVOffloadWeight"] = 100;
+                        else
+                            portOffloadSettings["IOVOffloadWeight"] = 0;
 
-                if (networkAdapterDefinition.SrIov)
-                    portOffloadSettings["IOVOffloadWeight"] = 100;
-                else
-                    portOffloadSettings["IOVOffloadWeight"] = 0;
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-
-                ModifyFeatureSettings(new ManagementObject[] { portOffloadSettings }, out _);
-                portOffloadSettings.Dispose();
+                        ModifyFeatureSettings(new ManagementObject[] { portOffloadSettings }, out _);
+                    }
 
                 //==================================================================================
                 // Configure Advanced Features
                 //==================================================================================
 
-                ManagementObject portSecuritySettings = CreateFeatureSettings(Features.Security);
+                if (networkAdapterDefinition.MacAddressSpoofing ||
+                    networkAdapterDefinition.DhcpGuard ||
+                    networkAdapterDefinition.RouterGuard ||
+                    networkAdapterDefinition.PortMirroringMode != PortMirroringMode.None ||
+                    networkAdapterDefinition.NicTeaming)
+                    using (ManagementObject portSecuritySettings = CreateFeatureSettings(Features.Security))
+                    {
+                        //----------------------------------------------------------------------------------
+                        // Configure MAC Address Spoofing
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure MAC Address Spoofing
-                //----------------------------------------------------------------------------------
+                        portSecuritySettings["AllowMacSpoofing"] = networkAdapterDefinition.MacAddressSpoofing;
 
-                portSecuritySettings["AllowMacSpoofing"] = networkAdapterDefinition.MacAddressSpoofing;
+                        //----------------------------------------------------------------------------------
+                        // Configure DHCP Guard
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure DHCP Guard
-                //----------------------------------------------------------------------------------
+                        portSecuritySettings["EnableDhcpGuard"] = networkAdapterDefinition.DhcpGuard;
 
-                portSecuritySettings["EnableDhcpGuard"] = networkAdapterDefinition.DhcpGuard;
+                        //----------------------------------------------------------------------------------
+                        // Configure Router Advertisement Guard
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure Router Advertisement Guard
-                //----------------------------------------------------------------------------------
+                        portSecuritySettings["EnableRouterGuard"] = networkAdapterDefinition.RouterGuard;
 
-                portSecuritySettings["EnableRouterGuard"] = networkAdapterDefinition.RouterGuard;
+                        //----------------------------------------------------------------------------------
+                        // Configure Port Mirroring
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure Port Mirroring
-                //----------------------------------------------------------------------------------
+                        switch (networkAdapterDefinition.PortMirroringMode)
+                        {
+                            case PortMirroringMode.None:
+                                portSecuritySettings["MonitorMode"] = 0; // None
+                                break;
 
-                switch (networkAdapterDefinition.PortMirroringMode)
-                {
-                    case PortMirroringMode.None:
-                        portSecuritySettings["MonitorMode"] = 0; // None
-                        break;
+                            case PortMirroringMode.Destination:
+                                portSecuritySettings["MonitorMode"] = 1; // Destination
+                                break;
 
-                    case PortMirroringMode.Destination:
-                        portSecuritySettings["MonitorMode"] = 1; // Destination
-                        break;
+                            case PortMirroringMode.Source:
+                                portSecuritySettings["MonitorMode"] = 2; // Source
+                                break;
+                        }
 
-                    case PortMirroringMode.Source:
-                        portSecuritySettings["MonitorMode"] = 2; // Source
-                        break;
-                }
+                        //----------------------------------------------------------------------------------
+                        // Configure NIC Teaming
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-                // Configure NIC Teaming
-                //----------------------------------------------------------------------------------
+                        portSecuritySettings["AllowTeaming"] = networkAdapterDefinition.NicTeaming;
 
-                portSecuritySettings["AllowTeaming"] = networkAdapterDefinition.NicTeaming;
+                        //----------------------------------------------------------------------------------
 
-                //----------------------------------------------------------------------------------
-
-                AddFeatureSettings(switchPort, new ManagementObject[] { portSecuritySettings }, out _);
-                portSecuritySettings.Dispose();
+                        AddFeatureSettings(switchPort, new ManagementObject[] { portSecuritySettings }, out _);
+                    }
 
                 //----------------------------------------------------------------------------------
 
@@ -615,46 +620,46 @@ namespace HyperV
             // Configure Security Settings
             //==================================================================================
 
-            ManagementObject securitySettings = GetRelatedSettings(systemSettings, Settings.Security);
+            if (virtualMachineDefinition.Security.TrustedPlatformModule ||
+                virtualMachineDefinition.Security.EncryptTraffic ||
+                virtualMachineDefinition.Security.Shielding)
+                using (ManagementObject securitySettings = GetRelatedSettings(systemSettings, Settings.Security))
+                {
+                    //----------------------------------------------------------------------------------
+                    // Encryption Support
+                    //----------------------------------------------------------------------------------
 
-            //----------------------------------------------------------------------------------
-            // Encryption Support
-            //----------------------------------------------------------------------------------
+                    // Enable Trusted Platform Module
+                    securitySettings["TpmEnabled"] = virtualMachineDefinition.Security.TrustedPlatformModule;
 
-            // Enable Trusted Platform Module
-            securitySettings["TpmEnabled"] = virtualMachineDefinition.Security.TrustedPlatformModule;
+                    if (virtualMachineDefinition.Security.TrustedPlatformModule)
+                    {
+                        // Encrypt state and virtual machine migration traffic
+                        securitySettings["EncryptStateAndVmMigrationTraffic"] = virtualMachineDefinition.Security.EncryptTraffic;
+                    }
 
-            if (virtualMachineDefinition.Security.TrustedPlatformModule)
-            {
-                // Encrypt state and virtual machine migration traffic
-                securitySettings["EncryptStateAndVmMigrationTraffic"] = virtualMachineDefinition.Security.EncryptTraffic;
-            }
+                    //----------------------------------------------------------------------------------
+                    // Security Policy
+                    //----------------------------------------------------------------------------------
 
-            //----------------------------------------------------------------------------------
-            // Security Policy
-            //----------------------------------------------------------------------------------
+                    // Enable Shielding
+                    securitySettings["ShieldingRequested"] = virtualMachineDefinition.Security.Shielding;
 
-            // Enable Shielding
-            securitySettings["ShieldingRequested"] = virtualMachineDefinition.Security.Shielding;
+                    if (virtualMachineDefinition.Security.Shielding)
+                    {
+                        // Enable Trusted Platform Module
+                        securitySettings["TpmEnabled"] = virtualMachineDefinition.Security.TrustedPlatformModule;
 
-            if (virtualMachineDefinition.Security.Shielding)
-            {
-                // Enable Trusted Platform Module
-                securitySettings["TpmEnabled"] = virtualMachineDefinition.Security.TrustedPlatformModule;
+                        // Encrypt State And Virtual Machine Migration Traffic
+                        securitySettings["EncryptStateAndVmMigrationTraffic"] = virtualMachineDefinition.Security.EncryptTraffic;
+                    }
 
-                // Encrypt State And Virtual Machine Migration Traffic
-                securitySettings["EncryptStateAndVmMigrationTraffic"] = virtualMachineDefinition.Security.EncryptTraffic;
-            }
+                    //----------------------------------------------------------------------------------
 
-            //----------------------------------------------------------------------------------
-
-            byte[] localKeyProtector = NewByGuardians();
-            SetKeyProtector(securitySettings, localKeyProtector);
-            ModifySecuritySettings(securitySettings);
-
-            //----------------------------------------------------------------------------------
-
-            securitySettings.Dispose();
+                    byte[] localKeyProtector = NewByGuardians();
+                    SetKeyProtector(securitySettings, localKeyProtector);
+                    ModifySecuritySettings(securitySettings);
+                }
 
             //==================================================================================
             // Integration Services Configuration
@@ -664,73 +669,86 @@ namespace HyperV
             // Configure Operating System Shutdown
             //----------------------------------------------------------------------------------
 
-            ManagementObject shutdownSettings = GetRelatedSettings(systemSettings, Settings.Shutdown);
-            if (virtualMachineDefinition.IntegrationServices.Shutdown)
-                shutdownSettings["EnabledState"] = 2; // Enabled
-            else
-                shutdownSettings["EnabledState"] = 3; // Disabled
-            ModifyGuestServiceSettings(new ManagementObject[] { shutdownSettings }, out _);
-            shutdownSettings.Dispose();
+            if (!virtualMachineDefinition.IntegrationServices.Shutdown)
+                using (ManagementObject shutdownSettings = GetRelatedSettings(systemSettings, Settings.Shutdown))
+                {
+                    if (virtualMachineDefinition.IntegrationServices.Shutdown)
+                        shutdownSettings["EnabledState"] = 2; // Enabled
+                    else
+                        shutdownSettings["EnabledState"] = 3; // Disabled
+                    ModifyGuestServiceSettings(new ManagementObject[] { shutdownSettings }, out _);
+                }
 
             //----------------------------------------------------------------------------------
             // Configure Time Synchronization
             //----------------------------------------------------------------------------------
 
-            ManagementObject timeSynchronizationSettings = GetRelatedSettings(systemSettings, Settings.TimeSynchronization);
-            if (virtualMachineDefinition.IntegrationServices.TimeSynchronisation)
-                timeSynchronizationSettings["EnabledState"] = 2; // Enabled
-            else
-                timeSynchronizationSettings["EnabledState"] = 3; // Disabled
-            ModifyGuestServiceSettings(new ManagementObject[] { timeSynchronizationSettings }, out _);
-            timeSynchronizationSettings.Dispose();
+            if (!virtualMachineDefinition.IntegrationServices.TimeSynchronisation)
+                using (ManagementObject timeSynchronizationSettings = GetRelatedSettings(systemSettings, Settings.TimeSynchronization))
+                {
+                    if (virtualMachineDefinition.IntegrationServices.TimeSynchronisation)
+                        timeSynchronizationSettings["EnabledState"] = 2; // Enabled
+                    else
+                        timeSynchronizationSettings["EnabledState"] = 3; // Disabled
+                    ModifyGuestServiceSettings(new ManagementObject[] { timeSynchronizationSettings }, out _);
+                }
 
             //----------------------------------------------------------------------------------
             // Configure Data Exchange
             //----------------------------------------------------------------------------------
 
-            ManagementObject dataExchangeSettings = GetRelatedSettings(systemSettings, Settings.DataExchange);
-            if (virtualMachineDefinition.IntegrationServices.DataExchange)
-                dataExchangeSettings["EnabledState"] = 2; // Enabled
-            else
-                dataExchangeSettings["EnabledState"] = 3; // Disabled
-            ModifyGuestServiceSettings(new ManagementObject[] { dataExchangeSettings }, out _);
-            dataExchangeSettings.Dispose();
+            if (!virtualMachineDefinition.IntegrationServices.DataExchange)
+                using (ManagementObject dataExchangeSettings = GetRelatedSettings(systemSettings, Settings.DataExchange))
+                {
+                    if (virtualMachineDefinition.IntegrationServices.DataExchange)
+                        dataExchangeSettings["EnabledState"] = 2; // Enabled
+                    else
+                        dataExchangeSettings["EnabledState"] = 3; // Disabled
+                    ModifyGuestServiceSettings(new ManagementObject[] { dataExchangeSettings }, out _);
+                }
 
             //----------------------------------------------------------------------------------
             // Configure Heartbeat
             //----------------------------------------------------------------------------------
 
-            ManagementObject heartbeatSettings = GetRelatedSettings(systemSettings, Settings.Heartbeat);
-            if (virtualMachineDefinition.IntegrationServices.Heartbeat)
-                heartbeatSettings["EnabledState"] = 2; // Enabled
-            else
-                heartbeatSettings["EnabledState"] = 3; // Disabled
-            ModifyGuestServiceSettings(new ManagementObject[] { heartbeatSettings }, out _);
-            heartbeatSettings.Dispose();
+            if (!virtualMachineDefinition.IntegrationServices.Heartbeat)
+                using (ManagementObject heartbeatSettings = GetRelatedSettings(systemSettings, Settings.Heartbeat))
+                {
+                    if (virtualMachineDefinition.IntegrationServices.Heartbeat)
+                        heartbeatSettings["EnabledState"] = 2; // Enabled
+                    else
+                        heartbeatSettings["EnabledState"] = 3; // Disabled
+                    ModifyGuestServiceSettings(new ManagementObject[] { heartbeatSettings }, out _);
+                }
 
             //----------------------------------------------------------------------------------
             // Configure Backup (Volume Shadow Copy)
             //----------------------------------------------------------------------------------
 
-            ManagementObject backupSettings = GetRelatedSettings(systemSettings, Settings.VolumeShadowCopy);
-            if (virtualMachineDefinition.IntegrationServices.VolumeShadowCopy)
-                backupSettings["EnabledState"] = 2; // Enabled
-            else
-                backupSettings["EnabledState"] = 3; // Disabled
-            ModifyGuestServiceSettings(new ManagementObject[] { backupSettings }, out _);
-            backupSettings.Dispose();
+            if (!virtualMachineDefinition.IntegrationServices.VolumeShadowCopy)
+                using (ManagementObject backupSettings = GetRelatedSettings(systemSettings, Settings.VolumeShadowCopy))
+                {
+                    if (virtualMachineDefinition.IntegrationServices.VolumeShadowCopy)
+                        backupSettings["EnabledState"] = 2; // Enabled
+                    else
+                        backupSettings["EnabledState"] = 3; // Disabled
+                    ModifyGuestServiceSettings(new ManagementObject[] { backupSettings }, out _);
+                }
 
             //----------------------------------------------------------------------------------
             // Configure Guest Services
             //----------------------------------------------------------------------------------
 
-            ManagementObject guestServicesSettings = GetRelatedSettings(systemSettings, Settings.GuestServices);
-            if (virtualMachineDefinition.IntegrationServices.GuestServices)
-                guestServicesSettings["EnabledState"] = 2; // Enabled
-            else
-                guestServicesSettings["EnabledState"] = 3; // Disabled
-            ModifyGuestServiceSettings(new ManagementObject[] { guestServicesSettings }, out _);
-            guestServicesSettings.Dispose();
+            if (!virtualMachineDefinition.IntegrationServices.GuestServices)
+                using (ManagementObject guestServicesSettings = GetRelatedSettings(systemSettings, Settings.GuestServices))
+                {
+                    if (virtualMachineDefinition.IntegrationServices.GuestServices)
+                        guestServicesSettings["EnabledState"] = 2; // Enabled
+                    else
+                        guestServicesSettings["EnabledState"] = 3; // Disabled
+                    ModifyGuestServiceSettings(new ManagementObject[] { guestServicesSettings }, out _);
+                    guestServicesSettings.Dispose();
+                }
 
             //==================================================================================
             // Cleanup

@@ -2,10 +2,12 @@
 
 namespace HyperV.Definitions
 {
+    ///<summary>Defines the Security settings.</summary>
     public class SecurityDefinition
     {
         private bool encryptTraffic;
 
+        ///<summary>Encrypt state and virtual machine migration traffic.</summary>
         public bool EncryptTraffic
         {
             get { return encryptTraffic; }
@@ -23,9 +25,11 @@ namespace HyperV.Definitions
             }
         }
 
+        ///<summary>Enable Secure Boot.</summary>
         public bool SecureBoot { get; set; }
         private Guid secureBootTemplate;
 
+        ///<summary>The template to use when Sceure Boot is enabled.</summary>
         public Guid SecureBootTemplate
         {
             get { return secureBootTemplate; }
@@ -38,6 +42,7 @@ namespace HyperV.Definitions
 
         private bool shielding;
 
+        ///<summary>Enable Shielding.</summary>
         public bool Shielding
         {
             get { return shielding; }
@@ -57,6 +62,7 @@ namespace HyperV.Definitions
             }
         }
 
+        ///<summary>Enable Trusted Platform Module.</summary>
         public bool TrustedPlatformModule { get; set; }
 
         public SecurityDefinition()
