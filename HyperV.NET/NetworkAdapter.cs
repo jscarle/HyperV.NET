@@ -98,6 +98,7 @@ namespace HyperV
             {
                 if (value < 1 || value > 4094)
                     throw new ArgumentOutOfRangeException($"{nameof(VlanId)} must be between 1 and 4094.");
+                Vlan = true;
                 vlanId = value;
             }
         }
