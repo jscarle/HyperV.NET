@@ -27,9 +27,10 @@ namespace HyperV.Definitions
 
         ///<summary>Enable Secure Boot.</summary>
         public bool SecureBoot { get; set; }
+
         private Guid secureBootTemplate;
 
-        ///<summary>The template to use when Sceure Boot is enabled.</summary>
+        ///<summary>The template to use when Secure Boot is enabled.</summary>
         public Guid SecureBootTemplate
         {
             get { return secureBootTemplate; }
@@ -65,6 +66,7 @@ namespace HyperV.Definitions
         ///<summary>Enable Trusted Platform Module.</summary>
         public bool TrustedPlatformModule { get; set; }
 
+        ///<summary>Initializes a new instance of the <see cref="SecurityDefinition"/> class.</summary>
         public SecurityDefinition()
         {
             SecureBoot = true;

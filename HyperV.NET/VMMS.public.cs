@@ -6,8 +6,10 @@ using HyperV.Extensions;
 
 namespace HyperV
 {
+    ///<summary>Defines the virtual machine management service.</summary>
     public partial class VMMS : IDisposable
     {
+        ///<summary>Initializes a new instance of the <see cref="VMMS"/> class.</summary>
         public VMMS()
         {
             host = Environment.MachineName;
@@ -18,6 +20,8 @@ namespace HyperV
             ims = GetImageManagementService();
         }
 
+        ///<summary>Initializes a new instance of the <see cref="VMMS"/> class on the specified host.</summary>
+        ///<param name="host">The host to connect to.</param>
         public VMMS(string host)
         {
             this.host = host.ToUpper();
@@ -28,6 +32,9 @@ namespace HyperV
             ims = GetImageManagementService();
         }
 
+        ///<summary>Initializes a new instance of the <see cref="VMMS"/> class on the specified host with specific connection options.</summary>
+        ///<param name="host">The host to connect to.</param>
+        ///<param name="connectionOptions">The connection specific settings.</param>
         public VMMS(string host, ConnectionOptions connectionOptions)
         {
             this.host = host.ToUpper();
@@ -38,12 +45,15 @@ namespace HyperV
             ims = GetImageManagementService();
         }
 
+        ///<summary>Release all resources used by this instance.</summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        ///<summary>Release all resources used by this instance.</summary>
+        ///<param name="disposing"><c>false</c> if being disposed by the desctructor; otherwise <c>true</c>.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
@@ -59,11 +69,14 @@ namespace HyperV
             }
         }
 
+        ///<summary>Destroys this instance.</summary>
         ~VMMS()
         {
             Dispose(false);
         }
 
+        ///<summary>Creates a new virtual machine using the specified definition.</summary>
+        ///<param name="virtualMachineDefinition">The definition of the virtual machine to create.</param>
         public void CreateVirtualMachine(VirtualMachineDefinition virtualMachineDefinition)
         {
             //==================================================================================
@@ -485,7 +498,7 @@ namespace HyperV
                 // Configure VLAN
                 //==================================================================================
 
-                if (networkAdapterDefinition.VlanId > 0)
+                if (networkAdapterDefinition.Vlan)
                     using (ManagementObject portVlanSettings = CreateFeatureSettings(Features.Vlan))
                     {
                         portVlanSettings["OperationMode"] = 1; // Access
@@ -758,6 +771,8 @@ namespace HyperV
             systemSettings.Dispose();
         }
 
+        ///<summary>Gets the boot order for the specified virtual machine.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
         public BootEntries GetVirtualMachineBootOrder(string name)
         {
             using (ManagementObject virtualMachine = GetVirtualMachine(name))
@@ -765,25 +780,30 @@ namespace HyperV
             {
                 BootEntries bootEntries = new BootEntries();
                 foreach (string bootEntry in (string[])systemSettings["BootSourceOrder"])
-                    bootEntries.Add(new BootEntry(bootEntry));
+                    bootEntries.Add(new BootDevice(bootEntry));
                 return bootEntries;
             }
         }
 
-        public void SetVirtualMachineBootOrder(string name, BootEntries bootEntries)
+        ///<summary>Sets the boot order for the specified virtual machine.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
+        ///<param name="bootOrder">The new boot order.</param>
+        public void SetVirtualMachineBootOrder(string name, BootEntries bootOrder)
         {
             using (ManagementObject virtualMachine = GetVirtualMachine(name))
             using (ManagementObject systemSettings = GetRelatedSettings(virtualMachine, Settings.System))
             {
-                List<string> bootOrder = new List<string>();
-                foreach (BootEntry bootEntry in bootEntries)
-                    bootOrder.Add(bootEntry.ToString());
-                systemSettings["BootSourceOrder"] = bootOrder.ToArray();
+                List<string> bootEntries = new List<string>();
+                foreach (BootDevice bootEntry in bootOrder)
+                    bootEntries.Add(bootEntry.ToString());
+                systemSettings["BootSourceOrder"] = bootEntries.ToArray();
 
                 ModifySystemSettings(systemSettings);
             }
         }
 
+        ///<summary>Starts the specified virtual machine.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
         public void StartVirtualMachine(string name)
         {
             using (ManagementObject virtualMachine = GetVirtualMachine(name))

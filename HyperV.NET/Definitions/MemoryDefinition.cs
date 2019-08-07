@@ -22,7 +22,7 @@ namespace HyperV.Definitions
 
         private UInt64 maximum;
 
-        ///<summary>The maximum RAM allowed when Dynamic Memory is enabled.</summary>
+        ///<summary>The maximum RAM (MB) allowed when Dynamic Memory is enabled.</summary>
         ///<value>The maximum must be between 32 and 12582912.</value>
         public UInt64 Maximum
         {
@@ -37,7 +37,7 @@ namespace HyperV.Definitions
 
         private UInt64 minimum;
 
-        ///<summary>The minimum RAM allowed when Dynamic Memory is enabled.</summary>
+        ///<summary>The minimum RAM (MB) allowed when Dynamic Memory is enabled.</summary>
         ///<value>The minimum must be between 32 and 12582912.</value>
         public UInt64 Minimum
         {
@@ -52,7 +52,7 @@ namespace HyperV.Definitions
 
         private UInt64 startup;
 
-        ///<summary>The amount of memory to use at startup.</summary>
+        ///<summary>The amount of RAM (MB) to use at startup.</summary>
         ///<value>The startup must be between 32 and 12582912.</value>
         public UInt64 Startup
         {
@@ -65,9 +65,10 @@ namespace HyperV.Definitions
             }
         }
 
-        ///<summary>The priority to use when balancing memory availability compared to other virtual machines.</summary>
+        ///<summary>The priority when balancing memory availability compared to other virtual machines.</summary>
         public MemoryWeight Weight { get; set; }
 
+        ///<summary>Initializes a new instance of the <see cref="MemoryDefinition"/> class.</summary>
         public MemoryDefinition()
         {
             Buffer = 20;

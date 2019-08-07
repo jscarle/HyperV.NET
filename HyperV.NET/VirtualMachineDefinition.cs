@@ -31,6 +31,7 @@ namespace HyperV
         public string Notes { get; set; }
 
         private string path;
+
         ///<summary>The path where the configuration files will be stored.</summary>
         ///<remarks>Setting the configuration path will reset the Checkpoints and Smart Paging paths to their defaults.</remarks>
         public string Path
@@ -57,9 +58,9 @@ namespace HyperV
         ///<summary>Defines the Smart Paging settings.</summary>
         public SmartPagingDefinition SmartPaging { get; set; } = new SmartPagingDefinition();
 
-        /// <summary>Initializes a new instance of the <see cref="VirtualMachineDefinition"/> class for the specified virtual machine name and configuration path.</summary>
-        /// <param name="name">The name of the virtual machine.</param>
-        /// <param name="path">The path where the configuration files will be stored.</param>
+        ///<summary>Initializes a new instance of the <see cref="VirtualMachineDefinition"/> class with the specified virtual machine name and configuration path.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
+        ///<param name="path">The path where the configuration files will be stored.</param>
         public VirtualMachineDefinition(string name, string path)
         {
             Name = name;

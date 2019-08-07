@@ -31,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Release\HyperV.NET.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,7 +44,7 @@
     <Compile Include="Definitions\AutomaticStopDefinition.cs" />
     <Compile Include="BootDeviceType.cs" />
     <Compile Include="BootEntries.cs" />
-    <Compile Include="BootEntry.cs" />
+    <Compile Include="BootDevice.cs" />
     <Compile Include="Definitions\CheckpointsDefinition.cs" />
     <Compile Include="CheckpointType.cs" />
     <Compile Include="Definitions\IntegrationServicesDefinition.cs" />

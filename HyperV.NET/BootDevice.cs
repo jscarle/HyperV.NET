@@ -4,14 +4,23 @@ using System.Management;
 
 namespace HyperV
 {
-    public class BootEntry
+    ///<summary>Defines a boot device.</summary>
+    public class BootDevice
     {
+        ///<summary>The firmware description of the boot device.</summary>
         public string Description { get; }
+
+        ///<summary>The type of boot device.</summary>
         public BootDeviceType DeviceType { get; }
+
+        ///<summary>A device specific value describing the boot media.</summary>
         public string Value { get; }
+
         private readonly string bootEntry;
 
-        public BootEntry(string bootEntry)
+        ///<summary>Initializes a new instance of the <see cref="BootDevice"/> class from the specified WMI string.</summary>
+        ///<param name="bootEntry">The WMI string for this boot device.</param>
+        public BootDevice(string bootEntry)
         {
             this.bootEntry = bootEntry;
             DeviceType = BootDeviceType.Unknown;
@@ -57,6 +66,7 @@ namespace HyperV
             }
         }
 
+        ///<summary>Returns the WMI string for this boot device.</summary>
         public override string ToString()
         {
             return bootEntry;

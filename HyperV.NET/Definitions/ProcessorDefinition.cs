@@ -22,6 +22,7 @@ namespace HyperV.Definitions
 
         ///<summary>Migrate to a physical computer with a different processor version.</summary>
         public bool LimitFeatures;
+
         private UInt64 numaMemoryPerNode;
 
         ///<summary>The maximum amount of memory (MB) per NUMA node.</summary>
@@ -112,6 +113,7 @@ namespace HyperV.Definitions
             }
         }
 
+        ///<summary>Initializes a new instance of the <see cref="ProcessorDefinition"/> class.</summary>
         public ProcessorDefinition()
         {
             Quantity = 1;

@@ -5,9 +5,9 @@ namespace HyperV.Definitions
     ///<summary>Defines the Automatic Start Action settings.</summary>
     public class AutomaticStartDefinition
     {
-
         ///<summary>The action when the physical computer starts.</summary>
         public AutomaticStartAction Action { get; set; }
+
         private UInt64 delay;
 
         ///<summary>The startup delay when the the virtual machine is configured to start automatically.</summary>
@@ -24,6 +24,7 @@ namespace HyperV.Definitions
             }
         }
 
+        ///<summary>Initializes a new instance of the <see cref="AutomaticStartDefinition"/> class.</summary>
         public AutomaticStartDefinition()
         {
             Action = AutomaticStartAction.Nothing;

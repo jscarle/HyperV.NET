@@ -2,12 +2,16 @@
 
 namespace HyperV
 {
-    public class BootEntries : List<BootEntry>
+    ///<summary>Defines a list of boot devices.</summary>
+    public class BootEntries : List<BootDevice>
     {
-        public void Move(int oldIndex, int newIndex)
+        ///<summary>Move a boot device from one index to another.</summary>
+        ///<param name="index">The current index of the boot device.</param>
+        ///<param name="newIndex">The new index for the boot device.</param>
+        public void Move(int index, int newIndex)
         {
-            BootEntry item = base[oldIndex];
-            base.RemoveAt(oldIndex);
+            BootDevice item = base[index];
+            base.RemoveAt(index);
             base.Insert(newIndex, item);
         }
     }
