@@ -10,6 +10,15 @@ Only Generation **2** virtual machines can be created.
 ## Compatiblity Testing
 This has only been tested on Windows Server 2016 at the moment.
 
+## Mentions
+Developing this library would not have been possible without some important resources.
+
+At least there is [_some_ documentation](https://docs.microsoft.com/en-us/windows/win32/hyperv_v2/windows-virtualization-portal) of the Hyper-V WMI provider. It is _very_ sparsely documented and as a result I banged my head against the wall several times trying to put this together. Nevertheless, it _is_ the golden resource.
+
+[WMI Explorer](https://github.com/vinaypamnani/wmie2/releases) is an excellent tool and allowed me to fill the gaps in the aformentioned documentation.
+
+Using a combination of Stephane Thirion's post discussing the [issue with the Add-VMTPM Powershell Cmdlet](https://www.archy.net/hyper-v-2016-add-vmtpm-issue/) and Luís Henrique Demetrio's useful tidbit on [how to get the source code](https://blogs.msdn.microsoft.com/luisdem/2016/05/19/get-the-source-code-of-the-powershell-cmdlets/) of Powershell Cmdlets using [ILspy](https://github.com/icsharpcode/ILSpy), I was finally able to get the security settings to work through WMI. The error messages are about as helpful as the documentation!
+
 ## Configurable Settings
 Nearly all of the configurable settings found in the standard Hyper-V management interface are available when creating a new virtual machine using this library. The following table describes which settings from that dialog can be configured.
 
