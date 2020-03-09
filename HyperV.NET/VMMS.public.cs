@@ -301,6 +301,31 @@ namespace HyperV
 
             systemSettings = GetRelatedSettings(virtualMachine, Settings.System);
 
+            decimal configurationVersion = Convert.ToDecimal(systemSettings["Version"]);
+
+            //==================================================================================
+            // Configure Memory Settings
+            //==================================================================================
+
+            ManagementObject memorySettings = GetRelatedSettings(systemSettings, Settings.Memory);
+            memorySettings.Dispose();
+
+            //==================================================================================
+            // Configure Processor Settings
+            //==================================================================================
+
+            ManagementObject processorSettings = GetRelatedSettings(systemSettings, Settings.Processor);
+
+            // Hardware Threads per Core
+            if (configurationVersion >= 8.0m && configurationVersion < 9.0m && virtualMachineDefinition.Processor.HardwareThreadsPerCore > 0)
+                processorSettings["HwThreadsPerCore"] = virtualMachineDefinition.Processor.HardwareThreadsPerCore;
+            else if (configurationVersion >= 9.0m)
+                processorSettings["HwThreadsPerCore"] = virtualMachineDefinition.Processor.HardwareThreadsPerCore;
+
+            ModifyResourceSettings(new ManagementObject[] { processorSettings }, out _);
+
+            processorSettings.Dispose();
+
             //==================================================================================
             // Configure SCSI Controllers
             //==================================================================================

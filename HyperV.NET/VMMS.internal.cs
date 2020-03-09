@@ -345,6 +345,19 @@ namespace HyperV
             }
         }
 
+        internal void ModifyResourceSettings(ManagementObject[] resourceSettings, out ManagementObject[] resultingResourceSettings)
+        {
+            using (ManagementBaseObject inputParameters = vmms.GetMethodParameters("ModifyResourceSettings"))
+            {
+                inputParameters["ResourceSettings"] = resourceSettings.ToStringArray();
+                using (ManagementBaseObject outputParameters = vmms.InvokeMethod("ModifyResourceSettings", inputParameters, null))
+                {
+                    ValidateOutput(outputParameters);
+                    resultingResourceSettings = ((string[])outputParameters["ResultingResourceSettings"]).ToObjectArray();
+                }
+            }
+        }
+
         internal void ModifySecuritySettings(ManagementObject securitySettings)
         {
             using (ManagementBaseObject inputParameters = ss.GetMethodParameters("ModifySecuritySettings"))
@@ -431,6 +444,8 @@ namespace HyperV
                 case Settings.System: return "Msvm_VirtualSystemSettingData";
                 case Settings.Security: return "Msvm_SecuritySettingData";
                 case Settings.Resource: return "Msvm_ResourceAllocationSettingData";
+                case Settings.Memory: return "Msvm_MemorySettingData";
+                case Settings.Processor: return "Msvm_ProcessorSettingData";
                 case Settings.Storage: return "Msvm_StorageAllocationSettingData";
                 case Settings.VirtualHardDisk: return "Msvm_VirtualHardDiskSettingData";
                 case Settings.NetworkAdapter: return "Msvm_SyntheticEthernetPortSettingData";
@@ -539,6 +554,8 @@ namespace HyperV
             System,
             Security,
             Resource,
+            Memory,
+            Processor,
             Storage,
             VirtualHardDisk,
             NetworkAdapter,

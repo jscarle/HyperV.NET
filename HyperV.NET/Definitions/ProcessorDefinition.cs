@@ -5,6 +5,21 @@ namespace HyperV.Definitions
     ///<summary>Defines the Processor settings.</summary>
     public class ProcessorDefinition
     {
+        private UInt64 hardwareThreadsPerCore;
+
+        ///<summary>The number of hardware threads per core.</summary>
+        ///<value>The limit must be between 0 and 2.</value>
+        public UInt64 HardwareThreadsPerCore
+        {
+            get { return hardwareThreadsPerCore; }
+            set
+            {
+                if (value > 2)
+                    throw new ArgumentOutOfRangeException($"{nameof(HardwareThreadsPerCore)} must be between 0 and 2.");
+                hardwareThreadsPerCore = value;
+            }
+        }
+
         private UInt64 limit;
 
         ///<summary>The virtual machine limit (percentage).</summary>
@@ -122,6 +137,7 @@ namespace HyperV.Definitions
             NumaMemoryPerNode = 131072;
             NumaNodesPerSocket = 1;
             NumaProcessorsPerNode = 8;
+            HardwareThreadsPerCore = 0;
         }
     }
 }
