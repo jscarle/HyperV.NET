@@ -63,7 +63,7 @@ Nearly all of the configurable settings found in the standard Hyper-V management
 | NUMA Topology: Processors | :heavy_check_mark: Yes | |
 | NUMA Topology: Memory | :heavy_check_mark: Yes | |
 | NUMA Topology: Nodes | :heavy_check_mark: Yes | |
-| Hardware Threads per Core | :heavy_check_mark: Yes | |
+| Hardware Threads per Core | :heavy_check_mark: Yes | :information_source: Requires configuration version 8.0 or higher. |
 | | | |
 | **SCSI Controller** | | :information_source: Up to 64 devices per SCSI Controller can be added. |
 | | | |
