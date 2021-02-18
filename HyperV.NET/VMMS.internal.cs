@@ -143,7 +143,7 @@ namespace HyperV
 
         internal ManagementObject CreateSettings(Settings settings)
         {
-            using (ManagementClass managementClass = new ManagementClass($"{SettingsClass(settings)}"))
+            using (ManagementClass managementClass = new ManagementClass(SettingsClass(settings)))
             {
                 managementClass.Scope = virtualizationScope;
                 return managementClass.CreateInstance();
@@ -214,6 +214,26 @@ namespace HyperV
             }
         }
 
+        internal void DestroyVirtualMachine(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            using (ManagementObject virtualMachine = GetVirtualMachine(name))
+            {
+                using (ManagementBaseObject inputParameters = vmms.GetMethodParameters("DestroySystem"))
+                {
+                    inputParameters["AffectedSystem"] = virtualMachine.Path.Path;
+                    using (ManagementBaseObject outputParameters = vmms.InvokeMethod("DestroySystem", inputParameters, null))
+                    {
+                        ValidateOutput(outputParameters);
+                    }
+                }
+            }
+        }
+
         internal bool ExistsVirtualSwitch(string name)
         {
             ObjectQuery query = new ObjectQuery($"SELECT * FROM Msvm_VirtualEthernetSwitch WHERE Caption = \"Virtual Switch\" AND ElementName = \"{name}\"");
@@ -238,7 +258,7 @@ namespace HyperV
 
         internal static ManagementObject GetRelatedSettings(ManagementObject instance, Settings settings)
         {
-            return instance.GetRelated($"{SettingsClass(settings)}").First();
+            return instance.GetRelated(SettingsClass(settings)).First();
         }
 
         internal ManagementObject GetSecurityService()

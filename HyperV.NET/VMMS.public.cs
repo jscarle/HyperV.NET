@@ -796,6 +796,16 @@ namespace HyperV
             systemSettings.Dispose();
         }
 
+        public void DeleteVirtualMachine(string name)
+        {
+            if (!ExistsVirtualMachine(name))
+            {
+                return;
+            }
+
+            DestroyVirtualMachine(name);
+        }
+
         ///<summary>Gets the boot order for the specified virtual machine.</summary>
         ///<param name="name">The name of the virtual machine.</param>
         public BootEntries GetVirtualMachineBootOrder(string name)
@@ -833,6 +843,14 @@ namespace HyperV
         {
             using (ManagementObject virtualMachine = GetVirtualMachine(name))
                 RequestStateChange(virtualMachine, RequestedState.Enabled);
+        }
+
+        ///<summary>Shuts down the specified virtual machine.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
+        public void ShutDownVirtualMachine(string name)
+        {
+            using (ManagementObject virtualMachine = GetVirtualMachine(name))
+                RequestStateChange(virtualMachine, RequestedState.ShutDown);
         }
     }
 }
