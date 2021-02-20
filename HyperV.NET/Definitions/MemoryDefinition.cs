@@ -72,8 +72,8 @@ namespace HyperV.Definitions
         public MemoryDefinition()
         {
             Buffer = 20;
-            Minimum = 32;
-            Maximum = 1024;
+            Minimum = 512;
+            Maximum = 1048576;
             Startup = 1024;
             Weight = MemoryWeight.Balanced;
         }
