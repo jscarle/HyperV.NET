@@ -75,9 +75,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>UpdateVersion.exe -v Assembly -b Increment -r Fixed -i "$(ProjectDir)Properties\AssemblyInfo.cs" -o AssemblyInfo$.cs
-move AssemblyInfo$.cs "$(ProjectDir)Properties\AssemblyInfo.cs"
-UpdateVersion.exe -v File -b Increment -r Fixed -i "$(ProjectDir)Properties\AssemblyInfo.cs" -o AssemblyInfo$.cs
-move AssemblyInfo$.cs "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

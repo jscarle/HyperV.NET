@@ -5,6 +5,15 @@ VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyperV.NET", "HyperV.NET\HyperV.NET.csproj", "{C95322F8-7BBF-4462-8FDA-ADD3B92C1150}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7231D813-6BA7-4AE4-8B1A-5983920A640D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{FA513D4B-9388-4920-BFDF-D6408902FE1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9A210580-E435-406C-8F13-BB155CED9CA4}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +27,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA513D4B-9388-4920-BFDF-D6408902FE1F} = {7231D813-6BA7-4AE4-8B1A-5983920A640D}
+		{9A210580-E435-406C-8F13-BB155CED9CA4} = {FA513D4B-9388-4920-BFDF-D6408902FE1F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8D68C52E-751F-4225-82C8-97D6D84C403F}
