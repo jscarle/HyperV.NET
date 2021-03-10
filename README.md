@@ -1,10 +1,10 @@
 # HyperV.NET - Simple Hyper-V Virtual Machine Creation
 The primary design goal of the HyperV.NET library is to abstract Hyper-V's WMI provider and present a simplified and strongly typed .NET implementation for deploying Hyper-V Virtual Machines. Much of the underlying mechanics have therefore purposefully been abstracted behind private or internal modifiers.
 
-![CI](https://github.com/jscarle/HyperV.NET/actions/workflows/main.yml/badge.svg)
+[![MSBuild](https://github.com/jscarle/HyperV.NET/actions/workflows/msbuild.yml/badge.svg)](https://github.com/jscarle/HyperV.NET/actions/workflows/msbuild.yml)
 
 ## References
-This library targets .NET Framework 4.7.2 and references the System and System.Management namespaces only.
+This library targets .NET Framework 4.5 and 5.0 and references the System and System.Management namespaces only.
 
 ## Supported Generations
 Only Generation **2** virtual machines can be created.
