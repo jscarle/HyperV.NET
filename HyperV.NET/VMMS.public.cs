@@ -862,5 +862,13 @@ namespace HyperV
             using (ManagementObject virtualMachine = GetVirtualMachine(name))
                 RequestStateChange(virtualMachine, RequestedState.ShutDown);
         }
+
+        ///<summary>Shuts down the specified virtual machine.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
+        public void TurnOffVirtualMachine(string name)
+        {
+            using (ManagementObject virtualMachine = GetVirtualMachine(name))
+                RequestStateChange(virtualMachine, RequestedState.Disabled);
+        }
     }
 }

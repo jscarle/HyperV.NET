@@ -5,7 +5,7 @@
     <AssemblyName>HyperV.NET</AssemblyName>
     <RootNamespace>HyperV</RootNamespace>
     <PackageId>HyperV.NET</PackageId>
-    <Version>1.0.175.0</Version>
+    <Version>1.0.176.0</Version>
     <Authors>Jean-Sebastien Carle</Authors>
     <Company>Jean-Sebastien Carle</Company>
     <Product>HyperV.NET</Product>
@@ -15,7 +15,7 @@
     <Copyright>Copyright © Jean-Sebastien Carle 2019-2021</Copyright>
     <RepositoryUrl>https://github.com/jscarle/HyperV.NET</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Added GetVirtualMachineState method.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added TurnOffVirtualMachine method.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
