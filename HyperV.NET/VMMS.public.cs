@@ -806,6 +806,16 @@ namespace HyperV
             DestroyVirtualMachine(name);
         }
 
+        ///<summary>Gets the state for the specified virtual machine.</summary>
+        ///<param name="name">The name of the virtual machine.</param>
+        public VirtualMachineState GetVirtualMachineState(string name)
+        {
+            using (ManagementObject virtualMachine = GetVirtualMachine(name))
+            {
+                return (VirtualMachineState)(UInt16)virtualMachine["EnabledState"];
+            }
+        }
+
         ///<summary>Gets the boot order for the specified virtual machine.</summary>
         ///<param name="name">The name of the virtual machine.</param>
         public BootEntries GetVirtualMachineBootOrder(string name)

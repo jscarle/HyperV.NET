@@ -5,21 +5,21 @@
     <AssemblyName>HyperV.NET</AssemblyName>
     <RootNamespace>HyperV</RootNamespace>
     <PackageId>HyperV.NET</PackageId>
-    <Version>1.0.174.0</Version>
+    <Version>1.0.175.0</Version>
     <Authors>Jean-Sebastien Carle</Authors>
     <Company>Jean-Sebastien Carle</Company>
     <Product>HyperV.NET</Product>
-    <Description>Simple Hyper-V Virtual Machine Creation</Description>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Simple Hyper-V Virtual Machine Management</Description>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Copyright>Copyright © Jean-Sebastien Carle 2019-2021</Copyright>
     <RepositoryUrl>https://github.com/jscarle/HyperV.NET</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Updated target frameworks and lowered System.Management dependancy version.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added GetVirtualMachineState method.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE">
+    <None Include="..\LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
