@@ -10,7 +10,74 @@ This library targets .NET Framework 4.5 and 5.0 and references the System and Sy
 Only Generation **2** virtual machines can be created.
 
 ## Compatiblity Testing
-This has only been tested on Windows Server 2016 at the moment.
+This has only been tested on Windows Server 2016 and Windows Server 2019 at the moment.
+
+## Quick Start
+
+### Connecting to Virtual Machine Management Service
+```csharp
+VMMS vmms = new VMMS("hostname");
+```
+
+### Creating a new Virtual Machine
+```csharp
+// Define the Virtual Machine
+VirtualMachineDefinition virtualMachineDefinition = new VirtualMachineDefinition(
+    "vmname",
+    @"C:\ProgramData\Microsoft\Windows\Hyper-V"
+);
+virtualMachineDefinition.Memory.Startup = 4096;
+virtualMachineDefinition.Processor.Quantity = 2;
+virtualMachineDefinition.ScsiControllers[0].Drives[0] = new VirtualHardDrive(new VirtualHardDisk(
+    VirtualHardDiskFormat.Vhdx,
+    VirtualHardDiskType.FixedSize,
+    64,
+    @"C:\Users\Public\Documents\Hyper-V\Virtual Hard Disks\vmname.vhdx"
+));
+virtualMachineDefinition.ScsiControllers[0].Drives[1] = new VirtualDvdDrive();
+virtualMachineDefinition.NetworkAdapters[0].VirtualSwitch = "VM Switch Name";
+virtualMachineDefinition.AutomaticStop.Action = AutomaticStopAction.Shutdown;
+
+// Create the Virtual Machine
+vmms.CreateVirtualMachine(virtualMachineDefinition);
+```
+
+### Reordering the Boot Order
+```csharp
+// Get boot order
+BootEntries bootOrder = vmms.GetVirtualMachineBootOrder(virtualMachineDefinition.Name);
+
+// Rearrange boot order
+BootEntries newBootOrder = new BootEntries();
+newBootOrder.AddRange(bootOrder.Where(bootDevice => bootDevice.DeviceType == BootDeviceType.DvdDrive));
+newBootOrder.AddRange(bootOrder.Where(bootDevice => bootDevice.DeviceType == BootDeviceType.File));
+newBootOrder.AddRange(bootOrder.Where(bootDevice => bootDevice.DeviceType == BootDeviceType.HardDrive));
+newBootOrder.AddRange(bootOrder.Where(bootDevice => bootDevice.DeviceType == BootDeviceType.NetworkAdapter));
+newBootOrder.AddRange(bootOrder.Where(bootDevice => bootDevice.DeviceType == BootDeviceType.Unknown));
+
+// Set new boot order
+vmms.SetVirtualMachineBootOrder(virtualMachineDefinition.Name, newBootOrder);
+```
+
+### Getting and changing the Virtual Machine's state
+```csharp
+// Get current state of virtual machine
+VirtualMachineState state = vmms.GetVirtualMachineState(virtualMachine.Name);
+
+// If the virtual machine is running, shut it down
+if (state == VirtualMachineState.Running)
+    vmms.ShutDownVirtualMachine(virtualMachine.Name);
+
+// Alternatively, turn off the Virtual Machine
+vmms.TurnOffVirtualMachine(virtualMachine.Name);
+```
+
+### Deleting a Virtual Machine
+```csharp
+// Delete the virtual machine
+vmms.DeleteVirtualMachine("vmname");
+```
+
 
 ## Mentions
 Developing this library would not have been possible without some important resources.
@@ -135,26 +202,3 @@ Nearly all of the configurable settings found in the standard Hyper-V management
 | | | |
 | **Automatic Stop** | | |
 | Action | :heavy_check_mark: Yes | |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
