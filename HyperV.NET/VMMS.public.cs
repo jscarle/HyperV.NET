@@ -683,15 +683,6 @@ namespace HyperV
                     // Enable Shielding
                     securitySettings["ShieldingRequested"] = virtualMachineDefinition.Security.Shielding;
 
-                    if (virtualMachineDefinition.Security.Shielding)
-                    {
-                        // Enable Trusted Platform Module
-                        securitySettings["TpmEnabled"] = virtualMachineDefinition.Security.TrustedPlatformModule;
-
-                        // Encrypt State And Virtual Machine Migration Traffic
-                        securitySettings["EncryptStateAndVmMigrationTraffic"] = virtualMachineDefinition.Security.EncryptTraffic;
-                    }
-
                     //----------------------------------------------------------------------------------
 
                     byte[] localKeyProtector = NewByGuardians();
