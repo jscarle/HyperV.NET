@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net50-windows;netstandard2.0;net45;net40</TargetFrameworks>
+    <TargetFrameworks>net50-windows;netstandard2.0;net45;net40;netcoreapp3.1;net6.0</TargetFrameworks>
     <AssemblyName>HyperV.NET</AssemblyName>
     <RootNamespace>HyperV</RootNamespace>
     <PackageId>HyperV.NET</PackageId>
@@ -43,8 +43,20 @@
 		</PackageReference>
 	</ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-        <Reference Include="System.Management" />
-    </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+		<Reference Include="System.Management" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+		<PackageReference Include="System.Management">
+			<Version>7.0.0</Version>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="System.Management">
+			<Version>7.0.0</Version>
+		</PackageReference>
+	</ItemGroup>
 
 </Project>
