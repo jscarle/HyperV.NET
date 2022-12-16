@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net50-windows;netstandard2.0;net45;net40;netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net40;net45;netcoreapp3.1;net6.0-windows;net7.0-windows</TargetFrameworks>
     <AssemblyName>HyperV.NET</AssemblyName>
     <RootNamespace>HyperV</RootNamespace>
     <PackageId>HyperV.NET</PackageId>
@@ -25,16 +25,14 @@
     </None>
   </ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net50-windows'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="System.Management">
-			<Version>4.5.0</Version>
+			<Version>4.7.0</Version>
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-		<PackageReference Include="System.Management">
-			<Version>4.5.0</Version>
-		</PackageReference>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+		<Reference Include="System.Management" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
@@ -43,17 +41,19 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-		<Reference Include="System.Management" />
-	</ItemGroup>
-
 	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
 		<PackageReference Include="System.Management">
-			<Version>7.0.0</Version>
+			<Version>4.7.0</Version>
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows'">
+		<PackageReference Include="System.Management">
+			<Version>6.0.0</Version>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-windows'">
 		<PackageReference Include="System.Management">
 			<Version>7.0.0</Version>
 		</PackageReference>
