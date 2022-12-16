@@ -5,17 +5,17 @@
     <AssemblyName>HyperV.NET</AssemblyName>
     <RootNamespace>HyperV</RootNamespace>
     <PackageId>HyperV.NET</PackageId>
-    <Version>1.0.176.0</Version>
+    <Version>1.1.0.0</Version>
     <Authors>Jean-Sebastien Carle</Authors>
     <Company>Jean-Sebastien Carle</Company>
     <Product>HyperV.NET</Product>
     <Description>Simple Hyper-V Virtual Machine Management</Description>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Copyright>Copyright © Jean-Sebastien Carle 2019-2021</Copyright>
+    <Copyright>Copyright © Jean-Sebastien Carle 2019-2022</Copyright>
     <RepositoryUrl>https://github.com/jscarle/HyperV.NET</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Added TurnOffVirtualMachine method.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated target frameworks.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
